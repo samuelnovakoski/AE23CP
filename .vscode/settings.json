@@ -1,0 +1,108 @@
+{
+    "emmet.syntaxProfiles": {
+      "html": "html",
+      "css": "css",
+      "C": "C",
+      "C#": "C#",
+      "javascript": "jsx"
+    },
+    "workbench.startupEditor": "newUntitledFile",
+    "editor.fontSize": 14,
+    "javascript.suggest.autoImports": true,
+    "html.suggest.autoImports": true,
+    "css.suggest.autoImports": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "editor.rulers": [
+      80,
+      120
+    ],
+    "extensions.ignoreRecommendations": true,
+    "typescript.tsserver.log": "off",
+    "files.associations": {
+      ".sequelizerc": "javascript",
+      ".stylelintrc": "json",
+      "*.tsx": "typescriptreact",
+      ".env.*": "dotenv",
+      ".prettierrc": "json",
+      "Força-bruta - maior palíndromo.C": "cpp",
+      "_______.C": "cpp",
+      "1 - Força-bruta - maior palíndromo.C": "cpp",
+      "7 - _______.C": "cpp",
+      "14 - .C": "cpp"
+    },
+    "screencastMode.onlyKeyboardShortcuts": true,
+    
+    "editor.parameterHints.enabled": false,
+    "editor.renderLineHighlight": "gutter",
+    "editor.lineHeight": 18,
+    "material-icon-theme.languages.associations": {
+      "dotenv": "tune"
+    },
+    "typescript.updateImportsOnFileMove.enabled": "never",
+    
+    "material-icon-theme.files.associations": {
+      "tsconfig.json": "tune",
+      "*.webpack.js": "webpack",
+      "*.proto": "3d",
+      "ormconfig.json": "database"
+    },
+    "material-icon-theme.activeIconPack": "nest",
+    "editor.suggestSelection": "first",
+    "explorer.confirmDelete": false,
+    "terminal.integrated.showExitAlert": false,
+    "[prisma]": {
+      "editor.formatOnSave": true
+    },
+    "typescript.suggest.autoImports": true,
+    "terminal.integrated.env.osx": {
+      "FIG_NEW_SESSION": "1"
+    },
+    "workbench.editor.labelFormat": "short",
+    "editor.fontLigatures": true,
+    "emmet.includeLanguages": {
+      "javascript": "javascriptreact",
+      "html": "html",
+      "css": "css",
+      "C": "C",
+      "C#": "C#",
+    },
+    
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "explorer.compactFolders": false,
+    "git.enableSmartCommit": true,
+    "editor.accessibilitySupport": "off",
+    "explorer.confirmDragAndDrop": false,
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true,
+      // "source.organizeImports": true
+    },
+    "editor.semanticHighlighting.enabled": false,
+    "breadcrumbs.enabled": true,
+    "workbench.productIconTheme": "fluent-icons",
+    "editor.fontFamily": "JetBrains Mono",
+    "gitlens.codeLens.authors.enabled": false,
+    "security.workspace.trust.untrustedFiles": "newWindow",
+    "files.exclude": {
+      "**\/CVS": true,
+      "**\/.DS_Store": true,
+      "**\/.hg": true,
+      "**\/.svn": true,
+      "**\/.git": true,
+      // "node_modules": true
+    },
+    "tabnine.experimentalAutoImports": true,
+  
+    
+    "editor.minimap.enabled": true,
+    "update.mode": "start",
+    "terminal.integrated.gpuAcceleration": "off",
+    "terminal.integrated.defaultProfile.osx": "fish",
+
+    "workbench.colorTheme": "Omni",
+    "files.autoSave": "afterDelay",
+    "window.zoomLevel": 2,
+    "workbench.iconTheme": "material-icon-theme",
+    "c-cpp-compile-run.run-in-external-terminal": false
+  }
