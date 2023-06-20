@@ -3,14 +3,20 @@
 #include <math.h>
 #include <stdlib.h>
 
+typedef struct GrafoLA GrafoLA;
 typedef struct Cell Cell;
 typedef struct Lista Lista;
 
-struct Cell{
-    int key;
-    struct Cell *next;
+struct GrafoLA{
+   int V; 
+   int A; 
+   Lista **adj; 
 };
 
+struct Cell{
+    int key;
+    Cell *next;
+};
 
 struct Lista{
     Cell *head;
@@ -38,7 +44,7 @@ int lista_vazia(Lista *l){
 }
 
 int procurar(int key, Lista *l){
-    Cell *aux;
+    Cell *aux = NULL;
 
     if (l != NULL){
         aux = l->head;
@@ -101,9 +107,9 @@ int remover_na_lista(int key, Lista *l){
             }
 
             if (auxA->key == key)
-            	auxP->next = auxA->next;
+                auxP->next = auxA->next;
             else
-            	auxA = NULL;
+                auxA = NULL;
         }
 
         if (auxA != NULL)
@@ -112,7 +118,7 @@ int remover_na_lista(int key, Lista *l){
         return 1;
     }
 
-        return 0;
+    return 0;
 }
 
 void imprimir_lista(Lista *l){
@@ -122,11 +128,10 @@ void imprimir_lista(Lista *l){
         aux = l->head;
 
         while (aux != NULL){
-            printf("%d", aux->key);
+            printf("%d ", aux->key);
 
             aux = aux->next;
         }
-
 
         printf("\n");
     }
@@ -152,15 +157,6 @@ int liberar_lista(Lista *l){
 
     return 0;
 }
-
-
-typedef struct GrafoLA GrafoLA;
-
-struct GrafoLA{
-   int V, A;
-   int *pi, *cor, *d; 
-   Lista **adj;
-};
 
 static Lista** iniciar_LA(int n){
     int i;
@@ -190,9 +186,14 @@ int aresta_existeLA(GrafoLA* G, int v1, int v2){
 }
 
 void inserir_arestaLA(GrafoLA* G, int v1, int v2){
+    Cell *aux;
+
     if (!aresta_existeLA(G, v1, v2)){
-        inserir_na_lista(v2, G->adj[v1]);
-        inserir_na_lista(v1, G->adj[v2]);
+        aux = criar_celula(v2);
+
+        aux->next = G->adj[v1]->head;
+        G->adj[v1]->head = aux;
+
         G->A++;
     }
 }
@@ -223,4 +224,55 @@ void liberarGLA(GrafoLA* G){
 
         free(G);
     }
+}
+
+int regular(GrafoLA *G){
+    int i, l, k = -1;
+    Cell *aux = NULL;
+
+    for(i = 0; i < G->V; i++){
+        aux = G->adj[i]->head;
+        l = 0;
+
+        while(aux != NULL){
+            l++;
+            aux = aux->next;
+        }
+
+        if(k == -1)
+            k = l;
+        else if(k != l)
+            return 0;
+    }
+
+    return k;
+}
+
+int main() {
+    int v, i, x, k;
+    GrafoLA *G;
+
+    scanf("%d", &v);
+
+    G = iniciar_grafoLA(v);
+
+    for(i = 0; i < v; i++){
+        do{
+            scanf("%d", &x);
+
+            if(x != -1)
+                inserir_arestaLA(G, i, x);
+        }while(x != -1);
+    }
+
+    k = regular(G);
+
+    if(k != 0)
+        printf("grafo k-regular com k=%d", k);
+    else
+        printf("grafo nao k-regular");
+
+    liberarGLA(G);
+    
+    return 0;
 }

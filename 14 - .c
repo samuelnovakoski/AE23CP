@@ -4,7 +4,6 @@
 #include <limits.h>
 #include <stdlib.h>
 
-typedef struct Lista Lista;
 typedef struct Cell Cell;
 
 struct Cell{
@@ -12,8 +11,11 @@ struct Cell{
     Cell *next;
 };
 
-struct Lista{
-    Cell *head;
+typedef struct FilaE FilaE;
+
+struct FilaE{
+    Cell *inicio;
+    Cell *fim;
 };
 
 Cell* criar_celula(int key){
@@ -24,6 +26,86 @@ Cell* criar_celula(int key){
     
     return c;
 }
+
+FilaE* criar_filaE(){
+    FilaE *f = (FilaE*) malloc(sizeof(FilaE));
+    
+    f->inicio = NULL;
+    f->fim = NULL;
+    
+    return f;
+}
+
+int filaE_vazia(FilaE* f){
+    return (f == NULL) || (f->inicio == NULL);
+}
+
+void enfileirar(int key, FilaE* f){
+    Cell *aux;
+
+    if (f == NULL)
+        f = criar_filaE();
+
+    aux = criar_celula(key);
+
+    if (f->inicio == NULL)
+        f->inicio = f->fim = aux;
+    else{
+        f->fim->next = aux;
+        f->fim = f->fim->next;
+    }
+}
+
+int desenfileirar(FilaE* f){
+    Cell *aux;
+    int item = INT_MIN;
+
+    if (!filaE_vazia(f)){
+        aux = f->inicio;
+
+        f->inicio = aux->next;
+        
+        item = aux->item;
+
+        free(aux);
+    }
+
+    return item;
+}
+
+void imprimir_fila(FilaE* f){
+    Cell *aux;
+
+    if (!filaE_vazia(f)){
+        aux = f->inicio;
+
+        while (aux != NULL){
+            printf("%d ", aux->item);
+            aux = aux->next;
+        }
+        
+        printf("\n");
+    }
+}
+
+int liberar_filaE(FilaE* f){
+    if (!filaE_vazia(f)){
+        while (f->inicio != NULL)
+            desenfileirar(f);
+
+        free(f);
+
+        return 1;
+    }
+
+    return 0;
+}
+
+typedef struct Lista Lista;
+
+struct Lista{
+    Cell *head;
+};
 
 Lista* criar_lista(){
     Lista* l = (Lista*) malloc(sizeof(Lista));
@@ -156,8 +238,8 @@ typedef struct GrafoLA GrafoLA;
 
 struct GrafoLA{
     int V, A;
-    int *pai, *cor, *d, *f;
     Lista **adj;
+    int *cor, *pi, *d, *f;
 };
 
 static Lista** iniciar_LA(int n){
@@ -180,12 +262,12 @@ GrafoLA* iniciar_grafoLA(int v){
     G->V = v;
     G->A = 0;
 
+    G->adj = iniciar_LA(G->V);
+
     G->cor = (int*) malloc(sizeof(int) * v);
-    G->pai = (int*) malloc(sizeof(int) * v);
+    G->pi = (int*) malloc(sizeof(int) * v);
     G->d = (int*) malloc(sizeof(int) * v);
     G->f = (int*) malloc(sizeof(int) * v);
-
-    G->adj = iniciar_LA(G->V);
 
     return G;
 }
@@ -210,7 +292,6 @@ void remover_arestaLA(GrafoLA* G, int v1, int v2){
         remover_na_lista(v2, G->adj[v1]);
         remover_na_lista(v1, G->adj[v2]);
         G->A--;
-
     }
 }
 
@@ -234,22 +315,22 @@ void liberarGLA(GrafoLA* G){
 }
 
 void visitar_vertice(GrafoLA *G, int u, int *tempo){
-    int v, x;
-    Cell *aux = NULL;
+    int v = 0; 
+    Cell *aux = G->adj[u]->head;
 
     G->cor[u] = 1;
     *tempo = *tempo + 1;
     G->d[u] = *tempo;
 
-    for(v = 0; v < G->V; v++){
-        aux = G->adj[v]->head;
-        while(aux != NULL){
-            x = aux->item;
-            G->pai[v] = u;
+    while(aux != NULL){
+        if((G->cor[v] == 0)){
+            G->pi[v] = u;
             visitar_vertice(G, v, tempo);
         }
+        v++;
+        aux = aux->next;
     }
-
+    
     G->cor[u] = 2;
     *tempo = *tempo + 1;
     G->f[u] = *tempo;
@@ -260,13 +341,12 @@ void busca_profundidade(GrafoLA *G){
 
     for(u = 0; u < G->V; u++){
         G->cor[u] = 0;
-        G->pai[u] = -1;
+        G->pi[u] = -1;
     }
 
-    for(u = 0; u < G->V; u++){
+    for(u = 0; u < G->V; u++)
         if(G->cor[u] == 0)
             visitar_vertice(G, u, &tempo);
-    }
 }
 
 void imprimir(GrafoLA *G){
@@ -277,18 +357,18 @@ void imprimir(GrafoLA *G){
     for(v = 0; v < G->V; v++){
         printf("%d %d %d ", v, G->d[v], G->f[v]);
 
-        if(G->pai[v] >= 0)
-            printf("%d\n", G->pai[v]);
+        if(G->pi[v] >= 0)
+            printf("%d\n", G->pi[v]);
         else
             printf("-\n");
     }
 }
 
 int main(){
-    int i, x, v;
+    int i, v, x;
     GrafoLA *G;
 
-    scanf("%d", &v);
+    scanf("%d",&v);
 
     G = iniciar_grafoLA(v);
 
@@ -303,6 +383,8 @@ int main(){
     busca_profundidade(G);
 
     imprimir(G);
+
+    liberarGLA(G);
 
     return 0;
 }
