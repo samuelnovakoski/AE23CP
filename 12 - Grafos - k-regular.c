@@ -186,14 +186,8 @@ int aresta_existeLA(GrafoLA* G, int v1, int v2){
 }
 
 void inserir_arestaLA(GrafoLA* G, int v1, int v2){
-    Cell *aux;
-
     if (!aresta_existeLA(G, v1, v2)){
-        aux = criar_celula(v2);
-
-        aux->next = G->adj[v1]->head;
-        G->adj[v1]->head = aux;
-
+        inserir_na_lista(v2, G->adj[v1]);
         G->A++;
     }
 }
@@ -203,7 +197,6 @@ void remover_arestaLA(GrafoLA* G, int v1, int v2){
         remover_na_lista(v2, G->adj[v1]);
         remover_na_lista(v1, G->adj[v2]);
         G->A--;
-
     }
 }
 

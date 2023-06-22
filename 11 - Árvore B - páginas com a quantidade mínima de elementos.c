@@ -66,10 +66,10 @@ int pesquisaSequencial(int key, NodeB *tree){
     if (tree != NULL){
         for (i = 0; i < tree->nro_chaves && key < tree->chaves[i]; i++);
 
-	if ((i < tree->nro_chaves) && (key == tree->chaves[i]))
-        	return 1;
+    if ((i < tree->nro_chaves) && (key == tree->chaves[i]))
+            return 1;
         else
-        	return pesquisaSequencial(key, tree->filhos[i]);
+            return pesquisaSequencial(key, tree->filhos[i]);
     }
 
     return 0;
@@ -120,10 +120,8 @@ static NodeB * split_pag(NodeB *pai, int posF_cheio){
 
     pag_dir->nro_chaves--;
 
-    
     return pai;
 }
-
 
 static NodeB * inserir_pagina_nao_cheia(NodeB *tree, int key){
     int i;
@@ -145,12 +143,10 @@ static NodeB * inserir_pagina_nao_cheia(NodeB *tree, int key){
         }
 
         tree->filhos[pos] = inserir_pagina_nao_cheia(tree->filhos[pos], key);
-
     }
 
     return tree;
 }
-
 
 NodeB * inserir(NodeB *tree, int key){
     NodeB *aux = tree;
@@ -171,4 +167,38 @@ NodeB * inserir(NodeB *tree, int key){
         tree = inserir_pagina_nao_cheia(aux, key);
 
     return tree;
+}
+
+int pg_min_elementos(NodeB *tree){
+    int i, qnt_pg = 0;
+
+    if(tree != NULL){
+        if((tree->nro_chaves < (N - 1)) && (tree->nro_chaves > 0))
+            qnt_pg++;
+
+        if(!tree->eh_no_folha)
+            for(i = 0; i <= tree->nro_chaves; i++)
+                qnt_pg += pg_min_elementos(tree->filhos[i]);
+
+        return qnt_pg;
+    }
+
+    return 0;
+}
+
+int main(){
+    int i, x, n;
+    NodeB *tree = criar();
+
+    scanf("%d", &n);
+
+    for(i = 0; i < n; i++){
+        scanf("%d", &x);
+        
+        tree = inserir(tree, x);
+    }
+
+    printf("%d", pg_min_elementos(tree));
+
+    return 0;
 }

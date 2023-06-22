@@ -5,17 +5,15 @@
 #include <stdlib.h>
 
 typedef struct Cell Cell;
+typedef struct Lista Lista;
 
 struct Cell{
     int item;
     Cell *next;
 };
 
-typedef struct FilaE FilaE;
-
-struct FilaE{
-    Cell *inicio;
-    Cell *fim;
+struct Lista{
+    Cell *head;
 };
 
 Cell* criar_celula(int key){
@@ -26,86 +24,6 @@ Cell* criar_celula(int key){
     
     return c;
 }
-
-FilaE* criar_filaE(){
-    FilaE *f = (FilaE*) malloc(sizeof(FilaE));
-    
-    f->inicio = NULL;
-    f->fim = NULL;
-    
-    return f;
-}
-
-int filaE_vazia(FilaE* f){
-    return (f == NULL) || (f->inicio == NULL);
-}
-
-void enfileirar(int key, FilaE* f){
-    Cell *aux;
-
-    if (f == NULL)
-        f = criar_filaE();
-
-    aux = criar_celula(key);
-
-    if (f->inicio == NULL)
-        f->inicio = f->fim = aux;
-    else{
-        f->fim->next = aux;
-        f->fim = f->fim->next;
-    }
-}
-
-int desenfileirar(FilaE* f){
-    Cell *aux;
-    int item = INT_MIN;
-
-    if (!filaE_vazia(f)){
-        aux = f->inicio;
-
-        f->inicio = aux->next;
-        
-        item = aux->item;
-
-        free(aux);
-    }
-
-    return item;
-}
-
-void imprimir_fila(FilaE* f){
-    Cell *aux;
-
-    if (!filaE_vazia(f)){
-        aux = f->inicio;
-
-        while (aux != NULL){
-            printf("%d ", aux->item);
-            aux = aux->next;
-        }
-        
-        printf("\n");
-    }
-}
-
-int liberar_filaE(FilaE* f){
-    if (!filaE_vazia(f)){
-        while (f->inicio != NULL)
-            desenfileirar(f);
-
-        free(f);
-
-        return 1;
-    }
-
-    return 0;
-}
-
-typedef struct Lista Lista;
-
-struct Lista{
-    Cell *head;
-};
 
 Lista* criar_lista(){
     Lista* l = (Lista*) malloc(sizeof(Lista));
@@ -240,7 +158,6 @@ struct GrafoLA{
     int V, A;
     Lista **adj;
     int *cor, *pi, *d, *f;
-    int tempo;
 };
 
 static Lista** iniciar_LA(int n){
@@ -251,10 +168,6 @@ static Lista** iniciar_LA(int n){
         adj[i] = criar_lista();
 
     return adj;
-}
-
-static int valida_vertice(GrafoLA* G, int v){
-    return (v >= 0) && (v < G->V);
 }
 
 GrafoLA* iniciar_grafoLA(int v){
@@ -269,7 +182,6 @@ GrafoLA* iniciar_grafoLA(int v){
     G->pi = (int*) malloc(sizeof(int) * v);
     G->d = (int*) malloc(sizeof(int) * v);
     G->f = (int*) malloc(sizeof(int) * v);
-    G->tempo = 0;
 
     return G;
 }
@@ -284,7 +196,6 @@ int aresta_existeLA(GrafoLA* G, int v1, int v2){
 void inserir_arestaLA(GrafoLA* G, int v1, int v2){
     if (!aresta_existeLA(G, v1, v2)){
         inserir_na_lista(v2, G->adj[v1]);
-        inserir_na_lista(v1, G->adj[v2]);
         G->A++;
     }
 }
@@ -292,7 +203,6 @@ void inserir_arestaLA(GrafoLA* G, int v1, int v2){
 void remover_arestaLA(GrafoLA* G, int v1, int v2){
     if (aresta_existeLA(G, v1, v2)){
         remover_na_lista(v2, G->adj[v1]);
-        remover_na_lista(v1, G->adj[v2]);
         G->A--;
     }
 }
@@ -316,46 +226,41 @@ void liberarGLA(GrafoLA* G){
     }
 }
 
-void DFS_visit(GrafoLA* G, int u) {
-    G->cor[u] = 1; // marca o vertice como cinza
-    G->tempo++;
-    G->d[u] = G->tempo;
+void visitar_vertice(GrafoLA *G, int u, int *tempo){
+    int v = 0; 
+    Cell *aux = G->adj[u]->head;
 
-    Cell *vCell = G->adj[u]->head;
+    G->cor[u] = 1;
+    *tempo = *tempo + 1;
+    G->d[u] = *tempo;
 
-    while (vCell != NULL) {
-        int v = vCell->item;
-
-        if (G->cor[v] == 0) {
+    while(aux != NULL){
+        v = aux->item;
+        if((G->cor[v] == 0)){
             G->pi[v] = u;
-            DFS_visit(G, v);
+            visitar_vertice(G, v, tempo);
         }
-
-        vCell = vCell->next;
+        
+        aux = aux->next;
     }
-
-    G->tempo++;
-    G->f[u] = G->tempo;
-    G->cor[u] = 2; // marca o vertice como preto
+    
+    G->cor[u] = 2;
+    *tempo = *tempo + 1;
+    G->f[u] = *tempo;
 }
 
-void dfs(GrafoLA* G) {
-    for (int i = 0; i < G->V; i++) {
-        G->cor[i] = 0; // todos os vertices sao brancos no inicio
-        G->pi[i] = -1; // todos os pais sao nulos no inicio
-        G->d[i] = 0;   // reinicia o tempo de descoberta
-        G->f[i] = 0;   // reinicia o tempo de finalizacao
-    }
-    G->tempo = 0; // reinicia o contador de tempo
+void busca_profundidade(GrafoLA *G){
+    int u, tempo = 0;
 
-    for (int i = 0; i < G->V; i++) {
-        if (G->cor[i] == 0) {
-            DFS_visit(G, i);
-        }
+    for(u = 0; u < G->V; u++){
+        G->cor[u] = 0;
+        G->pi[u] = -1;
     }
+
+    for(u = 0; u < G->V; u++)
+        if(G->cor[u] == 0)
+            visitar_vertice(G, u, &tempo);
 }
-
-
 
 void imprimir(GrafoLA *G){
     int v;
@@ -388,7 +293,7 @@ int main(){
         }while(x != -1);
     }
 
-    dfs(G);
+    busca_profundidade(G);
 
     imprimir(G);
 
